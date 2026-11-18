@@ -6,12 +6,12 @@
     "NguyenThiHongSan-2A202603513",
     "VoLeHaiDang-2A202603577"
   ],
-  "incident": "",
+  "incident": "S6",
   "decision_v1": "Tiếp tục",
-  "decision_v2": "",
+  "decision_v2": "Tiếp tục",
   "three_lines": {
-    "environment_assumption": "",
-    "reduce_or_prevent": "",
-    "measure_in_pilot": ""
+    "environment_assumption": "Thiết kế cổng hiện dựa vào giả định rằng dữ liệu tracking trong DB (delivered_date, delay_cause, danh sách parcels) được bưu cục quét và cập nhật chính xác, kịp thời trước khi trợ lý tra cứu, điều có thể sai khi bưu cục quét sót hoặc nhập nhầm nguyên nhân trễ.",
+    "reduce_or_prevent": "Trên phạm vi lỗi phần mềm (gán nhầm parcels[0], tự đoán đơn đa kiện thiếu parcel_id, ghi quá 2 lỗi/hãng/ngày), các cổng trong write_gate NGĂN hẳn tác hại vì chúng chặn hoặc ghi đè trực tiếp trước bước ghi ledger và faults bằng nguồn sự thật DB; nhưng với rủi ro sai dữ liệu tracking gốc từ bưu cục hay dồn ứ hàng chờ giờ cao điểm, cổng chỉ GIẢM khả năng và cần monitor + người trực phát hiện.",
+    "measure_in_pilot": "Trước Gate 2 trên pilot thật, cần đo lại tỉ lệ đơn đa kiện khách không nêu rõ parcel_id (ambiguous_multi_parcel_rate), tỉ lệ lỗi tracking bị lệch tại bưu cục, thời gian chờ duyệt thực tế vào giờ cao điểm (queue_wait_max_min), tần suất lỗi 429 của LLM thật và chi phí/ROI vận hành thực tế so với làm tay."
   }
 }

@@ -5,7 +5,7 @@
 - Tên nhóm (`TenNhom`, không dấu, không khoảng trắng): KHONGMUONBIDI
 - Lớp: `L3A`
 - Repo của bàn: `K5-L3A-DAY10-KHONGMUONBIDI-PoCtoPilotGate1`
-- Thẻ sự cố đã bốc (S1–S8):
+- Thẻ sự cố đã bốc (S1–S8): `S6`
 
 ## Thành viên
 
@@ -54,3 +54,32 @@ Mỗi thành viên tự viết một mục bên dưới (chép mẫu, đổi ti�
 
 - Một điều học được: Guardrails cấp hệ thống nằm ngoài mô hình (code gate trước các thao tác ghi DB) là phòng tuyến bắt buộc để bảo vệ sự toàn vẹn của sổ cái và ngân sách, không bao giờ được tin cậy hoàn toàn vào prompt hay lời khai của người dùng.
 - Một điều còn chưa chắc: Cần xem xét cách thức cổng thích ứng khi có sự thay đổi chính sách giữa các mốc thời gian (như chuyển giao REFUND-v3 sang REFUND-v4) nếu tracking DB gặp độ trễ đồng bộ.
+
+## LuuDangTuan-2A202603454
+
+### Phần việc phụ trách
+
+- Vai trong bàn: Kỹ sư Cổng, Monitor & Kỹ thuật Vòng 2 (cùng tham gia Câu 1.3 ở Khối 1).
+- Phụ trách chính: Khối 3 · Sự cố `S6` (Câu 3.0, 3.1, 3.5, 3.6), sửa cổng `lab10/guards.py`, viết chỉ số theo dõi `lab10/monitors.py`, cập nhật cổng `legal` trong `config/operating_gates.json`, hoàn thiện Phiếu C (`templates/form-c-incident.md`) và gom bài nộp `submission/`.
+
+### Đóng góp cụ thể
+
+- Xử lý lỗi đồng bộ ký tự xuống dòng (`CRLF` -> `LF`) trên Windows để khôi phục kiểm tra `1 integrity ✅` và `2 criteria ✅`.
+- Chạy mốc `prepared` và dò trace các ca hỏng đại diện trên thẻ `S6` (`S6-01@11`, `S6-04@11`, `S6-20@11`, `S6-42@11`), phân tích 3 nguyên nhân gốc: `agent.py` lấy cứng `parcels[0]` khi gọi `file_carrier_fault`, thiếu xử lý đơn đa kiện bị bỏ trống `parcel_id`, và không chặn vượt trần `2` lỗi/hãng/ngày (`max_auto_strikes_per_carrier_per_day`).
+- Bổ sung cổng Vòng 2 trong `lab10/guards.py`: (1) chặn và `escalate` đơn nhiều kiện trễ thiếu `parcel_id` trước `issue_refund`; (2) đối chiếu `H.ticket_parcel` và `Verdict.modify` sửa đúng `parcel_id`, `carrier_id`, `driver_id`, `delay_days` khi gọi `file_carrier_fault`; (3) đếm `fault_rows(carrier_id)` để `deny` khi đạt trần `2` lỗi/hãng/ngày.
+- Bổ sung 3 monitor mới trong `lab10/monitors.py` (`wrong_parcel_fault_or_reassigned_rate`, `ambiguous_multi_parcel_rate`, `carrier_daily_strike_excess_rate`) đều sáng đèn trên `S6` và `0.0` trên bộ nền.
+- Bật cổng pháp lý trong `config/operating_gates.json` (`carrier_fault_requires_recorded_cause: true`, chặn `recipient_contact` và `customer_note`), đưa kết quả `S6` từ `pass_rate = 0.3333` (40 lỗi hãng oan, 270k hoàn sai) lên `1.0` (`0` lỗi oan, `0đ` hoàn sai, `ROI = 0.91`) và `base` giữ nguyên `1.0`.
+
+### Bằng chứng
+
+- Mã lần chạy:
+  + `S6 · prepared` (trước sửa): `R-S6-prepared-20261118-165001-3f6fad` (`R-S6-grade-20261118-164959-3f6fad`)
+  + `S6 · after`: `R-S6-after-20261118-165557-edf64c`
+  + `base · after`: `R-base-after-20261118-165558-edf64c`
+  + `grade S6` (PASS-VISIBLE): `R-S6-grade-20261118-170005-edf64c` (base `R-S6-before-20261118-170006-edf64c`, prepared `R-S6-prepared-20261118-170006-edf64c`, after `R-S6-after-20261118-170006-edf64c`)
+- Dòng trong phiếu: Phiếu C mục C0–C12 (`templates/form-c-incident.md`), `lab10/guards.py`, `lab10/monitors.py`, `config/operating_gates.json`, `submission/submission.json`.
+
+### Exit ticket
+
+- Một điều học được: Khi đơn hàng tách nhiều kiện và hệ thống tự động gọi tool ở cấp đơn (`parcels[0]`), lỗi chìm sẽ dồn thiệt hại lên đối tác bên thứ ba mà khách hàng không hề hay biết; phải đặt cổng sửa/chặn tại `write_gate` dựa trên đơn vị sự thật (`parcel_id`) và theo dõi bằng monitor không nhãn.
+- Một điều còn chưa chắc: Độ chính xác thực tế của dữ liệu `tracking` từ bưu cục khi đưa vào pilot thật (nếu quét sót ngày giao hoặc ghi nhầm nguyên nhân trễ tại nguồn thì cổng đối chiếu DB vẫn bị phụ thuộc).
