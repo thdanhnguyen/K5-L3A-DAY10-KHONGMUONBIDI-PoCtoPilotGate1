@@ -1,5 +1,5 @@
 {
- "run_id": "R-S6-grade-20261118-170005-edf64c",
+ "run_id": "R-S6-grade-20261118-171738-edf64c",
  "incident": "S6",
  "grader_version": "lab10-1.0",
  "code_hash": "edf64c6abc9235fd330ea2b027def3762e0644590c7496ba1dc3bf97fd7496d1",
@@ -1312,9 +1312,9 @@
   }
  },
  "run_ids": {
-  "before": "R-S6-before-20261118-170006-edf64c",
-  "prepared": "R-S6-prepared-20261118-170006-edf64c",
-  "after": "R-S6-after-20261118-170006-edf64c"
+  "before": "R-S6-before-20261118-171739-edf64c",
+  "prepared": "R-S6-prepared-20261118-171739-edf64c",
+  "after": "R-S6-after-20261118-171739-edf64c"
  },
  "visible": {
   "before_red": true,
@@ -1404,5 +1404,5 @@
  "hard_gates_ok": true,
  "score": null,
  "verdict": "PASS-VISIBLE (chưa chạy test ẩn)",
- "seconds": 0.647
+ "seconds": 0.664
 }
